@@ -57,3 +57,18 @@ h1 {
 #forecastHeader {
     margin: 0.5rem 0;
 }
+
+#searchResults {
+    display: none;
+}
+  
+#searchHistoryList li {
+    cursor: pointer;
+    color: black;
+    background-color: white;
+    transition: background-color 300ms ease-in-out;
+}
+  
+#searchHistoryList li:hover {
+    background-color: #6db5fd;
+}
