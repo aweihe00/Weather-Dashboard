@@ -120,7 +120,7 @@ function populateCurrentWeatherConditions(results) {
     populateUVIndex(lon, lat);
   }
 
-  // Locating UV Index for searched city in local storage, or makes an API call to obtain the data.
+// Locating UV Index for searched city in local storage, or makes an API call to obtain the data.
 function populateUVIndex(lon, lat) {
     let UVIndexURL = `https://api.openweathermap.org/data/2.5/uvi?appid=${APIKEY}&lat=${lat}&lon=${lon}`;
     $.ajax({
@@ -145,4 +145,45 @@ function populateUVIndex(lon, lat) {
       $("#todaysUVIndex").addClass($("#todaysUVIndex").attr("data-uv-level"));
     });
   }
+
+// Searching local storage for forecast of city, or makes an API call if not found.
+function getFiveDayForecast(citySearched) {
+    let storedWeatherData = getStoredWeatherData();
+    let forecastURL = `https://api.openweathermap.org/data/2.5/forecast?q=${citySearched}&units=imperial&appid=${APIKEY}`;
+    let today = new Date().getDate();
+    for (let i = 0; i < storedWeatherData.searchHistory.length; i++) {
+      let savedDate = new Date(
+        storedWeatherData.searchHistory[i].dt * 1000
+      ).getDate();
+      if (
+        storedWeatherData.searchHistory[i].cityName.toLowerCase() ==
+          citySearched &&
+        savedDate == today
+      ) {
+        for (let j = 0; j < storedWeatherData.data.forecast.length; j++) {
+          if (
+            storedWeatherData.data.forecast[j].city.name.toLowerCase() ==
+            citySearched.toLowerCase()
+          ) {
+            populateForecast(storedWeatherData.data.forecast[j]);
+            return;
+          }
+        }
+      }
+    }
+    $.ajax({
+      url: forecastURL,
+      method: "GET"
+    }).then(function(results) {
+      populateForecast(results);
+      storeForecast(results, citySearched);
+    });
+  }
   
+// Storing the forecast of the city to local storage if not found.
+function storeForecast(results, citySearched) {
+    citySearched = citySearched.toLowerCase().trim();
+    let storedWeatherData = getStoredWeatherData();
+    storedWeatherData.data.forecast.push(results);
+    localStorage.setItem("storedWeatherData", JSON.stringify(storedWeatherData));
+  }
