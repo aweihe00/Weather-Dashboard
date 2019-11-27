@@ -45,7 +45,7 @@ function getStoredWeatherData() {
     }
   }
   
-  // Looking in local storage for weather data of user's search
+// Looking in local storage for weather data of user's search
 function getCurrentWeatherConditions(citySearched) {
     let queryURL = `https://api.openweathermap.org/data/2.5/weather?q=${citySearched}&units=imperial&appid=${APIKEY}`;
     let storedWeatherData = getStoredWeatherData();
@@ -91,4 +91,31 @@ function storeCurrentWeather(results) {
     storedWeatherData.searchHistory.push(searchHistoryEntry);
     storedWeatherData.data.currentWeather.push(results);
     localStorage.setItem("storedWeatherData", JSON.stringify(storedWeatherData));
+  }
+
+// Current weather data retrieved either from local storage or API call
+function populateCurrentWeatherConditions(results) {
+    let cityName = results.name;
+    let date = new Date(results.dt * 1000);
+    let description = results.weather[0].main;
+    let humidity = results.main.humidity;
+    let iconURL = `https://openweathermap.org/img/w/${results.weather[0].icon}.png`;
+    let temp = results.main.temp;
+    let windSpeed = results.wind.speed;
+  
+    let lon = results.coord.lon;
+    let lat = results.coord.lat;
+  
+// Adding data to the page.
+    $("#currentCity").text(cityName);
+    $("#todaysDate").text(
+      `(${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()})`
+    );
+    $("#currentWeatherIcon").attr("src", iconURL);
+    $("#currentWeatherIcon").attr("alt", description + " icon");
+    $("#todaysTemp").text(temp);
+    $("#todaysHumidity").text(humidity);
+    $("#todaysWindSpeed").text(windSpeed);
+  
+    populateUVIndex(lon, lat);
   }
