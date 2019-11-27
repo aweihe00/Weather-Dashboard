@@ -119,3 +119,30 @@ function populateCurrentWeatherConditions(results) {
   
     populateUVIndex(lon, lat);
   }
+
+  // Locating UV Index for searched city in local storage, or makes an API call to obtain the data.
+function populateUVIndex(lon, lat) {
+    let UVIndexURL = `https://api.openweathermap.org/data/2.5/uvi?appid=${APIKEY}&lat=${lat}&lon=${lon}`;
+    $.ajax({
+      url: UVIndexURL,
+      method: "GET"
+    }).then(function(results) {
+      let UVIndex = results.value;
+      let currUVLevel = $("#todaysUVIndex").attr("data-uv-level");
+      $("#todaysUVIndex").removeClass(currUVLevel);
+      $("#todaysUVIndex").text(UVIndex);
+      if (UVIndex < 3) {
+        $("#todaysUVIndex").attr("data-uv-level", "uv-low");
+      } else if (UVIndex < 6) {
+        $("#todaysUVIndex").attr("data-uv-level", "uv-mod");
+      } else if (UVIndex < 8) {
+        $("#todaysUVIndex").attr("data-uv-level", "uv-high");
+      } else if (UVIndex < 11) {
+        $("#todaysUVIndex").attr("data-uv-level", "uv-very-high");
+      } else {
+        $("#todaysUVIndex").attr("data-uv-level", "uv-ext");
+      }
+      $("#todaysUVIndex").addClass($("#todaysUVIndex").attr("data-uv-level"));
+    });
+  }
+  
