@@ -71,7 +71,7 @@ function getCurrentWeatherConditions(citySearched) {
       }
     }
     
-  // making an API call to get the current weather if not in storage
+// Making an API call to get the current weather if not in storage
   $.ajax({
     url: queryURL,
     method: "GET"
@@ -80,3 +80,15 @@ function getCurrentWeatherConditions(citySearched) {
     storeCurrentWeather(results);
   });
 }
+
+// Storing the current weather data of the API call.
+function storeCurrentWeather(results) {
+    let storedWeatherData = getStoredWeatherData();
+    let searchHistoryEntry = {
+      cityName: results.name,
+      dt: results.dt
+    };
+    storedWeatherData.searchHistory.push(searchHistoryEntry);
+    storedWeatherData.data.currentWeather.push(results);
+    localStorage.setItem("storedWeatherData", JSON.stringify(storedWeatherData));
+  }
