@@ -149,7 +149,7 @@ function populateUVIndex(lon, lat) {
 // Searching local storage for forecast of city, or makes an API call if not found.
 function getFiveDayForecast(citySearched) {
     let storedWeatherData = getStoredWeatherData();
-    let forecastURL = `https://api.openweathermap.org/data/2.5/forecast?q=${citySearched}&units=imperial&appid=${APIKEY}`;
+    let forecastURL = `https://api.openweathermap.org/data/2.5/forecast?q=${citySearched}&units=imperial&appid=ace07f609ddfcf658bcba38cc43237a5`;
     let today = new Date().getDate();
     for (let i = 0; i < storedWeatherData.searchHistory.length; i++) {
       let savedDate = new Date(
@@ -186,4 +186,45 @@ function storeForecast(results, citySearched) {
     let storedWeatherData = getStoredWeatherData();
     storedWeatherData.data.forecast.push(results);
     localStorage.setItem("storedWeatherData", JSON.stringify(storedWeatherData));
+  }
+
+// Taking forecast data from local storage or an API call, and displays the forecast results to the DOM.
+function populateForecast(results) {
+    $("#forecast").empty();
+    let list = results.list;
+    let daysForecasted = 0;  // Checking that only 5 days are shown
+    for (let i = 0; i < list.length && daysForecasted < 6; i++) {
+      let time = list[i].dt_txt.split(" ")[1];
+  
+      if (time == "12:00:00") {
+        let cardDiv = $("<div class='card forecast-card mx-2 shadow'>");
+        let cardBodyDiv = $("<div class='card-body'>");
+  
+        let dateDiv = $("<div class='forecast-date'>");
+        let date = formatDate(list[i].dt_txt.split(" ")[0]);
+        dateDiv.text(date);
+  
+        let imgElem = $("<img>");
+        let iconURL = `https://openweathermap.org/img/w/${list[i].weather[0].icon}.png`;
+        imgElem.attr("src", iconURL);
+        let temp = list[i].main.temp;
+        let pTemp = $(`<p>Temp: ${temp} &degF</p>`);
+        let humidity = list[i].main.humidity;
+        let pHumid = $(`<p>Humidity: ${humidity}%</p>`);
+  
+        cardBodyDiv.append(dateDiv, imgElem, pTemp, pHumid);
+        cardDiv.append(cardBodyDiv);
+        $("#forecast").append(cardDiv);
+  
+        daysForecasted++;
+      }
+    }
+    populateSearchHistory();
+  }
+  
+  // Formats the openweathermaps API date format to "MM/DD/YYY"
+  function formatDate(date) {
+    let arr = date.split(" ")[0].split("-");
+    let formattedDate = `${arr[1]}/${arr[2]}/${arr[0]}`;
+    return formattedDate;
   }
