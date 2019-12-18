@@ -43,3 +43,5 @@ Icon image (visual representation of weather conditions)
 Temperature
 
 Humidity
+
+![capture](https://user-images.githubusercontent.com/56567819/71109993-0b7b7600-218c-11ea-9e8d-f3b5bad0c242.png)
